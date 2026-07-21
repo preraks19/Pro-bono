@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pro Bono Legal Aid Directory</title>
+<style>
+  :root{
+    --ink:#1c2a24;
+    --paper:#f7f5ef;
+    --card:#ffffff;
+    --line:#dcd7c9;
+    --accent:#1f6f5c;
+    --accent-dark:#154d40;
+    --amber:#b8863c;
+    --danger:#a33f3f;
+    --mono: 'Courier New', monospace;
+  }
+  *{box-sizing:border-box;}
+  body{
+    margin:0;
+    background:var(--paper);
+    color:var(--ink);
+    font-family:Georgia, 'Times New Roman', serif;
+    line-height:1.5;
+  }
+  header{
+    padding:36px 24px 22px;
+    border-bottom:3px double var(--accent-dark);
+    text-align:center;
+    background:linear-gradient(180deg, rgba(31,111,92,0.05), transparent);
+  }
+  header .eyebrow{
+    font-family:var(--mono);
+    letter-spacing:.18em;
+    text-transform:uppercase;
+    font-size:11px;
+    color:var(--amber);
+    margin-bottom:8px;
+  }
+  header h1{
+    margin:0;
+    font-size:clamp(24px,4vw,34px);
+    font-weight:700;
+    color:var(--accent-dark);
+  }
+  header p{
+    max-width:580px;
+    margin:10px auto 0;
+    font-size:14px;
+    color:#4a5750;
+  }
+  main{
+    max-width:1000px;
+    margin:0 auto;
+    padding:28px 20px 60px;
+  }
+  .panel{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:6px;
+    padding:22px 24px;
+    margin-bottom:28px;
+    box-shadow:0 1px 3px rgba(28,42,36,0.06);
+  }
+  .panel h2{
+    margin:0 0 4px;
+    font-size:18px;
+    color:var(--accent-dark);
+    display:flex;
+    align-items:baseline;
+    gap:8px;
+  }
+  .panel h2 .num{
+    font-family:var(--mono);
+    font-size:12px;
+    color:var(--amber);
+    border:1px solid var(--amber);
+    border-radius:3px;
+    padding:1px 6px;
+  }
+  .panel .sub{
+    font-size:13px;
+    color:#6b7570;
+    margin:0 0 18px;
+  }
+  form{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:14px 18px;
+  }
+  .field{display:flex;flex-direction:column;gap:5px;}
+  .field.full{grid-column:1/-1;}
+  label{
+    font-family:var(--mono);
+    font-size:11px;
+    text-transform:uppercase;
+    letter-spacing:.06em;
+    color:#54615a;
+  }
+  label .req{color:var(--danger);}
+  input{
+    font-family:Georgia, serif;
+    font-size:14px;
+    padding:9px 10px;
+    border:1px solid var(--line);
+    border-radius:4px;
+    background:#fffdf9;
+    color:var(--ink);
+  }
+  input:focus{
+    outline:none;
+    border-color:var(--accent);
+    box-shadow:0 0 0 3px rgba(31,111,92,0.12);
+  }
+  .form-actions{
+    grid-column:1/-1;
+    display:flex;
+    align-items:center;
+    gap:12px;
+    margin-top:6px;
+    flex-wrap:wrap;
+  }
+  button{
+    font-family:var(--mono);
+    font-size:13px;
+    letter-spacing:.03em;
+    padding:10px 18px;
+    border-radius:4px;
+    border:1px solid var(--accent-dark);
+    cursor:pointer;
+    transition:transform .08s ease, background .15s ease, opacity .15s ease;
+  }
+  button.primary{
+    background:var(--accent);
+    color:#fff;
+  }
+  button.primary:hover{background:var(--accent-dark);}
+  button.primary:disabled{opacity:.55; cursor:wait;}
+  button.ghost{
+    background:transparent;
+    color:var(--accent-dark);
+  }
+  button.ghost:hover{background:rgba(31,111,92,0.08);}
+  button:active{transform:translateY(1px);}
+  #formMsg{
+    font-size:13px;
+    font-family:var(--mono);
+    color:var(--accent-dark);
+    min-height:16px;
+    font-weight:bold;
+  }
+  #formMsg.error{color:var(--danger);}
+
+  .toolbar{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    gap:12px;
+    flex-wrap:wrap;
+    margin-bottom:14px;
+  }
+  .toolbar .count{
+    font-family:var(--mono);
+    font-size:12px;
+    color:#6b7570;
+  }
+  .toolbar .actions{display:flex;gap:8px;flex-wrap:wrap;}
+  .search{
+    width:100%;
+    padding:9px 12px;
+    border:1px solid var(--line);
+    border-radius:4px;
+    font-family:Georgia,serif;
+    font-size:13px;
+    margin-bottom:14px;
+    background:#fffdf9;
+  }
+  table{
+    width:100%;
+    border-collapse:collapse;
+    font-size:13px;
+  }
+  thead th{
+    text-align:left;
+    font-family:var(--mono);
+    font-size:10.5px;
+    text-transform:uppercase;
+    letter-spacing:.05em;
+    color:#fff;
+    background:var(--accent-dark);
+    padding:9px 10px;
+    position:sticky;
+    top:0;
+  }
+  thead th:first-child{border-top-left-radius:4px;}
+  thead th:last-child{border-top-right-radius:4px;}
+  tbody td{
+    padding:9px 10px;
+    border-bottom:1px solid var(--line);
+    vertical-align:top;
+  }
+  tbody tr:hover{background:rgba(31,111,92,0.05);}
+  tbody tr.new-entry{
+    background:rgba(184,134,60,0.18);
+    animation: flashIn 1.6s ease-out 1;
+  }
+  @keyframes flashIn{
+    0%{background:rgba(184,134,60,0.5);}
+    100%{background:rgba(184,134,60,0.18);}
+  }
+  .badge{
+    display:inline-block;
+    font-family:var(--mono);
+    font-size:9.5px;
+    text-transform:uppercase;
+    letter-spacing:.04em;
+    padding:1px 6px;
+    border-radius:3px;
+    margin-left:6px;
+    vertical-align:middle;
+  }
+  .badge.verified{background:rgba(31,111,92,0.12); color:var(--accent-dark); border:1px solid rgba(31,111,92,0.35);}
+  .badge.community{background:rgba(184,134,60,0.14); color:#8a621f; border:1px solid rgba(184,134,60,0.4);}
+  .del-btn{
+    font-family:var(--mono);
+    font-size:11px;
+    color:var(--danger);
+    background:none;
+    border:1px solid var(--danger);
+    padding:3px 8px;
+    border-radius:3px;
+    cursor:pointer;
+  }
+  .del-btn:hover{background:rgba(163,63,63,0.08);}
+  .empty-row td{
+    text-align:center;
+    color:#8a938c;
+    font-family:var(--mono);
+    font-size:12px;
+    padding:24px;
+  }
+  .table-wrap{
+    max-height:520px;
+    overflow:auto;
+    border:1px solid var(--line);
+    border-radius:6px;
+  }
+  footer{
+    text-align:center;
+    font-family:var(--mono);
+    font-size:11px;
+    color:#8a938c;
+    padding:30px 20px 40px;
+  }
+  .note{
+    background:#fbf3e3;
+    border:1px solid #e6cf9f;
+    color:#6b501f;
+    font-size:12.5px;
+    padding:10px 14px;
+    border-radius:5px;
+    margin-bottom:18px;
+  }
+  .note.good{
+    background:#eaf4ee;
+    border-color:#bfe0cd;
+    color:#154d40;
+  }
+  @media (max-width:640px){
+    form{grid-template-columns:1fr;}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="eyebrow">Volunteer Legal Aid &middot; Directory Intake</div>
+  <h1>Pro Bono Legal Aid Directory</h1>
+  <p>A running list of advocates who've volunteered assistance. New submissions are saved permanently and shared with everyone who opens this page — this directory is <strong>append-only</strong>: there is no button anywhere on this page to remove an entry.</p>
+</header>
+
+<main>
+
+  <div class="panel">
+    <h2><span class="num">01</span> Add a contact</h2>
+    <p class="sub">Only <strong>Name</strong> is required. Once submitted, an entry is saved to the shared directory and cannot be deleted from this page by anyone, including you.</p>
+    <form id="addForm" novalidate>
+      <div class="field full">
+        <label for="name">Name <span class="req">*</span></label>
+        <input type="text" id="name" placeholder="e.g. Priya Sharma, Adv.">
+      </div>
+      <div class="field">
+        <label for="phone">Phone number</label>
+        <input type="text" id="phone" placeholder="e.g. +91 98765 43210">
+      </div>
+      <div class="field">
+        <label for="address">Address / Location</label>
+        <input type="text" id="address" placeholder="e.g. Delhi High Court">
+      </div>
+      <div class="field">
+        <label for="instagram">Instagram username</label>
+        <input type="text" id="instagram" placeholder="e.g. handle_without_at">
+      </div>
+      <div class="field">
+        <label for="emails">Email(s)</label>
+        <input type="text" id="emails" placeholder="separate multiple with a semicolon">
+      </div>
+      <div class="form-actions">
+        <button type="button" class="primary" id="submitBtn">Add to directory</button>
+        <button type="button" class="ghost" id="clearBtn">Clear form</button>
+        <span id="formMsg"></span>
+      </div>
+    </form>
+  </div>
+
+  <div class="panel">
+    <h2><span class="num">02</span> Directory</h2>
+    <p class="sub"><span class="badge verified">Verified</span> = original compiled list. <span class="badge community">Community</span> = added through this form, saved to shared storage.</p>
+    <div class="note good" id="storageNote">Loading shared directory&hellip;</div>
+
+    <input type="text" class="search" id="searchBox" placeholder="Search by name, phone, or email&hellip;">
+
+    <div class="toolbar">
+      <span class="count" id="rowCount">&nbsp;</span>
+      <div class="actions">
+        <button class="ghost" id="exportCsvBtn" type="button">Export CSV</button>
+      </div>
+    </div>
+
+    <div class="table-wrap" id="tableWrap">
+      <table>
+        <thead>
+          <tr>
+            <th style="width:23%">Name</th>
+            <th style="width:15%">Phone number</th>
+            <th style="width:17%">Address</th>
+            <th style="width:15%">Instagram</th>
+            <th style="width:20%">Emails</th>
+            <th style="width:10%">Source</th>
+            <th id="manageHeaderCell" style="width:8%;display:none">Manage</th>
+          </tr>
+        </thead>
+        <tbody id="tableBody"></tbody>
+      </table>
+    </div>
+  </div>
+
+</main>
+
+<footer>Compiled from publicly shared volunteer offers &middot; verify details directly before relying on them</footer>
+
+<script>
+(function(){
+  "use strict";
+
+  window.addEventListener('error', function(e){
+    var el = document.getElementById('formMsg');
+    if(el){
+      el.textContent = 'Script error: ' + e.message;
+      el.className = 'error';
+    }
+  });
+
+  var VERIFIED = [{"Name": "Gauri Rajput", "Phone number": "+91 88263 78291", "Address": "", "Instagram Username": "gauriiiirajputt", "Emails": ""}, {"Name": "Anshul", "Phone number": "9711817819", "Address": "", "Instagram Username": "", "Emails": "Anshul929@gmail.com"}, {"Name": "Abhishumat Gupta", "Phone number": "9811088803", "Address": "", "Instagram Username": "", "Emails": ""}, {"Name": "Yash A. Jodhani", "Phone number": "7575855566", "Address": "Delhi and Gujrat", "Instagram Username": "", "Emails": ""}, {"Name": "Urvashi Bhatia & team (+10)", "Phone number": "9899905773", "Address": "", "Instagram Username": "", "Emails": ""}, {"Name": "Adv. Rajesh Yadav", "Phone number": "9917591089", "Address": "", "Instagram Username": "", "Emails": ""}, {"Name": "Adv. Abbas B", "Phone number": "7092800770", "Address": "", "Instagram Username": "", "Emails": ""}, {"Name": "Adv. Sahiba kaur and Deepshika", "Phone number": "9988001666", "Address": "Delhi", "Instagram Username": "", "Emails": ""}, {"Name": "Adv. Rupal Pandey", "Phone number": "9284438941", "Address": "Chattisgarh high court", "Instagram Username": "", "Emails": ""}, {"Name": "Saanil Patnayak, Adv.", "Phone number": "9958364738", "Address": "", "Instagram Username": "saanil_patnayak", "Emails": "saanil.patnayak@gmail.com"}, {"Name": "Manish (Bettercallmanish)", "Phone number": "+91-842-744-7122", "Address": "", "Instagram Username": "naasamjhdoggy", "Emails": "manish@bettercallmanish.com; happiness@bettercallmanish.com"}, {"Name": "Tanishka Sharma, Adv.", "Phone number": "", "Address": "", "Instagram Username": "advtanishka_sharma26", "Emails": "adv.tanishkasharma@gmail.com"}, {"Name": "Utkarsh Trivedi, Advocate", "Phone number": "7982079131", "Address": "", "Instagram Username": "utkarsh.trivedii", "Emails": ""}, {"Name": "Adv. Sanchit", "Phone number": "+91-9958998883", "Address": "Delhi", "Instagram Username": "", "Emails": ""}, {"Name": "Shambhavi Singh, Advocate", "Phone number": "", "Address": "", "Instagram Username": "_shambhavi17_", "Emails": "advocateshambhavisingh@gmail.com"}, {"Name": "Vanshika Yadav, Advocate", "Phone number": "7296948897", "Address": "", "Instagram Username": "", "Emails": "yadavvanshika039@gmail.com"}, {"Name": "Abinash (Legal Aid)", "Phone number": "+91 9776870505", "Address": "", "Instagram Username": "", "Emails": "legalaidbyabinash@gmail.com"}, {"Name": "Advocate(s), Punjab & Haryana High Court", "Phone number": "8826856446", "Address": "Chandigarh", "Instagram Username": "", "Emails": ""}, {"Name": "Parameesh Takkar", "Phone number": "9999887204", "Address": "", "Instagram Username": "", "Emails": "Takkaradvocates@gmail.com"}, {"Name": "Victoria Gonsalves", "Phone number": "+91 9518365250", "Address": "Mumbai", "Instagram Username": "", "Emails": "victoriagonsalveslegal@gmail.com"}, {"Name": "Divyanshu K.", "Phone number": "8002065443", "Address": "", "Instagram Username": "", "Emails": "DivyanshuK.law@protonmail.com"}, {"Name": "Adv. Parshant", "Phone number": "9467591675", "Address": "", "Instagram Username": "", "Emails": ""}, {"Name": "Japneet & colleague", "Phone number": "+91 99588 64713", "Address": "", "Instagram Username": "", "Emails": ""}, {"Name": "Parth Kumar", "Phone number": "8800552469", "Address": "", "Instagram Username": "parthkumar30", "Emails": ""}, {"Name": "", "Phone number": "+918800287657", "Address": "Delhi", "Instagram Username": "", "Emails": ""}, {"Name": "Adv. Omkar Charan", "Phone number": "9913210888", "Address": "Gujarat", "Instagram Username": "", "Emails": ""}, {"Name": "Mohd Zaid Suleman", "Phone number": "9651651251", "Address": "", "Instagram Username": "", "Emails": "adv.zsuleman@gmail.com"}, {"Name": "Prerna Robin", "Phone number": "8283945956", "Address": "Delhi", "Instagram Username": "", "Emails": ""}, {"Name": "Nidhi Kashyap, Adv.", "Phone number": "", "Address": "Delhi", "Instagram Username": "adv.nidhi.kashyap.6", "Emails": "Advnidhikashyap@gmail.com"}, {"Name": "Sanjay Yadav", "Phone number": "", "Address": "", "Instagram Username": "sanjay.yadav458", "Emails": "sanjay.yadav.law11@gmail.com"}, {"Name": "Simran Bajaj, Adv.", "Phone number": "9996574400", "Address": "Delhi", "Instagram Username": "adv_simran_bajaj_", "Emails": "advocatesimranbajaj@gmail.com"}, {"Name": "Alya Veronica, Adv.", "Phone number": "9220746699", "Address": "", "Instagram Username": "alveronica9", "Emails": ""}, {"Name": "Ritika Thakur, Adv.", "Phone number": "8527178657", "Address": "Delhi", "Instagram Username": "", "Emails": ""}, {"Name": "Ashu Goyal, Adv.", "Phone number": "9953655078", "Address": "Delhi NCR", "Instagram Username": "", "Emails": ""}, {"Name": "Soumil Singh, Advocate", "Phone number": "9278193939", "Address": "Allahabad High Court", "Instagram Username": "", "Emails": ""}, {"Name": "Mohd Umar, Adv.", "Phone number": "+91-9873780660", "Address": "", "Instagram Username": "", "Emails": ""}, {"Name": "Pawan Arora, Advocate", "Phone number": "9896700982", "Address": "", "Instagram Username": "", "Emails": ""}, {"Name": "Prasann Prashar, Advocate", "Phone number": "+91 88771 09010", "Address": "Delhi High Court", "Instagram Username": "", "Emails": ""}, {"Name": "Aditya Gogna, Adv.", "Phone number": "9899111973", "Address": "", "Instagram Username": "", "Emails": ""}, {"Name": "Abhay Goswami, Adv.", "Phone number": "7505470290", "Address": "", "Instagram Username": "", "Emails": "abhaygoswami219@gmail.com"}, {"Name": "Balbir Singh", "Phone number": "9971235354", "Address": "Allahabad High Court", "Instagram Username": "", "Emails": "adv.balbirsingh168@gmail (incomplete)"}, {"Name": "Yuvraj Kumar, Advocate", "Phone number": "9097267108", "Address": "Patna High Court", "Instagram Username": "naasamjhdoggy", "Emails": ""}, {"Name": "Nikhil Panjwani, Adv.", "Phone number": "+918860973850", "Address": "", "Instagram Username": "adv.nikhilpanjwani", "Emails": ""}, {"Name": "Sourabh Todkar, Adv.", "Phone number": "7053970724", "Address": "", "Instagram Username": "adv.s.todkar", "Emails": ""}, {"Name": "Zubin, Adv.", "Phone number": "9810034486", "Address": "", "Instagram Username": "iamzub.in_", "Emails": ""}, {"Name": "Anjani Kumar Gupta, Adv.", "Phone number": "8896233015", "Address": "Allahabad High Court", "Instagram Username": "imanjanirpg", "Emails": ""}, {"Name": "Imon Bhattacharya, Adv.", "Phone number": "+91 98187 74088", "Address": "", "Instagram Username": "", "Emails": ""}, {"Name": "Aish Rana, Adv.", "Phone number": "8791468956", "Address": "", "Instagram Username": "", "Emails": "adv.aishrana.sci@gmail.com"}, {"Name": "Kautilya Joshi", "Phone number": "61489216526", "Address": "Gujrat", "Instagram Username": "", "Emails": ""}].map(function(r){
+    return {
+      Name: r["Name"] || "",
+      Phone: r["Phone number"] || "",
+      Address: r["Address"] || "",
+      Instagram: r["Instagram Username"] || "",
+      Emails: r["Emails"] || "",
+      source: 'verified',
+      isNew: false
+    };
+  });
+
+  var community = [];   // loaded from shared persistent storage
+  var storageOk = true;
+
+  // Hidden management mode: only active when the page URL includes ?manage=1.
+  // Regular visitors never see this — there is no visible control that reveals
+  // or hints at it. Only the directory owner, who knows to add it, can use it.
+  // Even in this mode, only community (form-submitted) entries can be removed;
+  // the original verified list can never be altered from this page.
+  var manageMode = /(?:^|[?&])manage=1(?:&|$)/.test(window.location.search);
+
+  var tableBody = document.getElementById('tableBody');
+  var rowCount = document.getElementById('rowCount');
+  var searchBox = document.getElementById('searchBox');
+  var formMsg = document.getElementById('formMsg');
+  var tableWrap = document.getElementById('tableWrap');
+  var storageNote = document.getElementById('storageNote');
+  var submitBtn = document.getElementById('submitBtn');
+
+  function escapeHtml(str){
+    return String(str)
+      .replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;')
+      .replace(/"/g,'&quot;');
+  }
+
+  function allContacts(){
+    return community.concat(VERIFIED);
+  }
+
+  function render(filter, scrollToFirst){
+    filter = filter || '';
+    var q = filter.trim().toLowerCase();
+    var all = allContacts();
+    var rows = all.filter(function(c){
+      if(!q) return true;
+      return (c.Name + ' ' + c.Phone + ' ' + c.Address + ' ' + c.Emails + ' ' + c.Instagram).toLowerCase().indexOf(q) !== -1;
+    });
+
+    if(rows.length === 0){
+      tableBody.innerHTML = '<tr class="empty-row"><td colspan="' + (manageMode ? 7 : 6) + '">No matching contacts.</td></tr>';
+    } else {
+      var html = '';
+      for(var i=0;i<rows.length;i++){
+        var c = rows[i];
+        var badge = c.source === 'community'
+          ? '<span class="badge community">Community</span>'
+          : '<span class="badge verified">Verified</span>';
+        html += '<tr class="' + (c.isNew ? 'new-entry' : '') + '">'
+          + '<td>' + (escapeHtml(c.Name) || '&mdash;') + '</td>'
+          + '<td>' + (escapeHtml(c.Phone) || '&mdash;') + '</td>'
+          + '<td>' + (escapeHtml(c.Address) || '&mdash;') + '</td>'
+          + '<td>' + (escapeHtml(c.Instagram) || '&mdash;') + '</td>'
+          + '<td>' + (escapeHtml(c.Emails) || '&mdash;') + '</td>'
+          + '<td>' + badge + '</td>';
+        if(manageMode){
+          html += '<td>' + (c.source === 'community'
+            ? '<button type="button" class="del-btn mgmt-del" data-uid="' + escapeHtml(c._uid) + '">Remove</button>'
+            : '<span style="color:#b7bfb9;font-family:var(--mono);font-size:10px;">locked</span>')
+            + '</td>';
+        }
+        html += '</tr>';
+      }
+      tableBody.innerHTML = html;
+    }
+    rowCount.textContent = all.length + ' contact' + (all.length===1?'':'s')
+      + ' (' + VERIFIED.length + ' verified, ' + community.length + ' community)'
+      + (q ? ' \u2014 ' + rows.length + ' shown' : '');
+
+    if(scrollToFirst){
+      var newRow = tableBody.querySelector('tr.new-entry');
+      try{
+        if(newRow && typeof newRow.scrollIntoView === 'function'){
+          newRow.scrollIntoView({block:'center'});
+        } else {
+          tableWrap.scrollTop = 0;
+        }
+      }catch(err){ tableWrap.scrollTop = 0; }
+    }
+  }
+
+  searchBox.addEventListener('input', function(){ render(searchBox.value, false); });
+
+  document.getElementById('clearBtn').addEventListener('click', function(){
+    document.getElementById('name').value = '';
+    document.getElementById('phone').value = '';
+    document.getElementById('address').value = '';
+    document.getElementById('instagram').value = '';
+    document.getElementById('emails').value = '';
+    formMsg.textContent = '';
+    formMsg.className = '';
+  });
+
+  // ---- Shared persistent storage ----
+
+  async function loadCommunityEntries(){
+    try{
+      if(!window.storage || typeof window.storage.list !== 'function'){
+        throw new Error('storage API unavailable');
+      }
+      var listResult = await window.storage.list('contact:', true);
+      var keys = (listResult && listResult.keys) ? listResult.keys : [];
+      var loaded = [];
+      for(var i=0;i<keys.length;i++){
+        try{
+          var res = await window.storage.get(keys[i], true);
+          if(res && res.value){
+            var parsed = JSON.parse(res.value);
+            loaded.push({
+              Name: parsed.Name || "",
+              Phone: parsed.Phone || "",
+              Address: parsed.Address || "",
+              Instagram: parsed.Instagram || "",
+              Emails: parsed.Emails || "",
+              source: 'community',
+              isNew: false,
+              _key: keys[i],
+              _uid: keys[i]
+            });
+          }
+        }catch(innerErr){ /* skip unreadable entry */ }
+      }
+      loaded.sort(function(a,b){ return (a._key < b._key) ? 1 : -1; }); // newest first
+      community = loaded;
+      storageOk = true;
+      storageNote.textContent = community.length
+        ? 'Shared directory loaded \u2014 ' + community.length + ' community-submitted contact' + (community.length===1?'':'s') + ' found, visible to everyone who opens this page.'
+        : 'Shared directory loaded \u2014 no community submissions yet. Be the first to add one below.';
+      storageNote.className = 'note good';
+    }catch(e){
+      storageOk = false;
+      community = [];
+      storageNote.textContent = 'Shared storage isn\u2019t available in this environment, so new submissions in this session will only be visible to you and won\u2019t persist after you close the tab. Export CSV to save your additions.';
+      storageNote.className = 'note';
+    }
+    render('', false);
+  }
+
+  async function addContact(){
+    var name = document.getElementById('name').value.trim();
+    var phone = document.getElementById('phone').value.trim();
+    var address = document.getElementById('address').value.trim();
+    var instagram = document.getElementById('instagram').value.trim().replace(/^@/,'');
+    var emails = document.getElementById('emails').value.trim();
+
+    if(!name){
+      formMsg.textContent = 'Please enter at least a name.';
+      formMsg.className = 'error';
+      document.getElementById('name').focus();
+      return;
+    }
+
+    submitBtn.disabled = true;
+    submitBtn.textContent = 'Adding\u2026';
+
+    var localUid = 'local:' + Date.now() + '-' + Math.random().toString(36).slice(2,8);
+    var entry = { Name:name, Phone:phone, Address:address, Instagram:instagram, Emails:emails, source:'community', isNew:true, _uid: localUid };
+
+    var savedKey = null;
+    var savedOk = false;
+
+    if(storageOk && window.storage && typeof window.storage.set === 'function'){
+      var key = 'contact:' + Date.now() + '-' + Math.random().toString(36).slice(2,8);
+      try{
+        await window.storage.set(key, JSON.stringify({
+          Name:name, Phone:phone, Address:address, Instagram:instagram, Emails:emails
+        }), true);
+        entry._key = key;
+        entry._uid = key;
+        savedKey = key;
+        savedOk = true;
+        community.forEach(function(c){ c.isNew = false; });
+        community.unshift(entry);
+      }catch(saveErr){
+        // Fall back to session-only if the write failed
+        community.forEach(function(c){ c.isNew = false; });
+        community.unshift(entry);
+      }
+    } else {
+      community.forEach(function(c){ c.isNew = false; });
+      community.unshift(entry);
+    }
+
+    document.getElementById('name').value = '';
+    document.getElementById('phone').value = '';
+    document.getElementById('address').value = '';
+    document.getElementById('instagram').value = '';
+    document.getElementById('emails').value = '';
+    searchBox.value = '';
+
+    submitBtn.disabled = false;
+    submitBtn.textContent = 'Add to directory';
+
+    render('', true);
+    showAddedMessage(name, entry, savedOk, savedKey);
+  }
+
+  // Shows a confirmation with a short-lived "Undo" link that can only remove
+  // the entry that was JUST added, by the person who just added it, within
+  // a short window. It cannot be used to remove anyone else's entry, and it
+  // stops working after the window closes or the page is reloaded.
+  function showAddedMessage(name, entry, savedOk, savedKey){
+    var undoSeconds = 15;
+    var expired = false;
+
+    function renderMsg(secondsLeft){
+      formMsg.innerHTML = '';
+      var label = document.createElement('span');
+      label.textContent = savedOk
+        ? 'Saved "' + name + '" to the shared directory \u2713'
+        : 'Added "' + name + '" for this session only \u2014 shared storage unavailable.';
+      label.className = '';
+      formMsg.className = savedOk ? '' : 'error';
+      formMsg.appendChild(label);
+
+      if(!expired){
+        var sep = document.createTextNode('  \u2014  ');
+        formMsg.appendChild(sep);
+        var undoBtn = document.createElement('button');
+        undoBtn.type = 'button';
+        undoBtn.className = 'ghost';
+        undoBtn.style.padding = '2px 10px';
+        undoBtn.style.fontSize = '11px';
+        undoBtn.textContent = 'Undo (' + secondsLeft + 's)';
+        undoBtn.addEventListener('click', function(){
+          undo(entry, savedKey);
+        });
+        formMsg.appendChild(undoBtn);
+      }
+    }
+
+    renderMsg(undoSeconds);
+    var remaining = undoSeconds;
+    var tick = setInterval(function(){
+      remaining -= 1;
+      if(remaining <= 0){
+        expired = true;
+        clearInterval(tick);
+        formMsg.textContent = '';
+        return;
+      }
+      renderMsg(remaining);
+    }, 1000);
+  }
+
+  async function undo(entry, savedKey){
+    var idx = community.indexOf(entry);
+    if(idx !== -1) community.splice(idx, 1);
+    if(savedKey && window.storage && typeof window.storage.delete === 'function'){
+      try{ await window.storage.delete(savedKey, true); }catch(e){ /* best effort */ }
+    }
+    formMsg.textContent = 'Removed.';
+    formMsg.className = '';
+    render('', false);
+    setTimeout(function(){ formMsg.textContent = ''; }, 2000);
+  }
+
+  submitBtn.addEventListener('click', function(e){ e.preventDefault(); addContact(); });
+
+  ['name','phone','address','instagram','emails'].forEach(function(id){
+    document.getElementById(id).addEventListener('keydown', function(e){
+      if(e.key === 'Enter'){ e.preventDefault(); addContact(); }
+    });
+  });
+
+  function toCsvValue(v){
+    if(v === null || v === undefined) v = '';
+    v = String(v);
+    if(/[",\n]/.test(v)) v = '"' + v.replace(/"/g,'""') + '"';
+    return v;
+  }
+
+  function download(filename, content, mime){
+    var blob = new Blob([content], {type: mime});
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement('a');
+    a.href = url; a.download = filename;
+    document.body.appendChild(a); a.click(); a.remove();
+    setTimeout(function(){ URL.revokeObjectURL(url); }, 1000);
+  }
+
+  document.getElementById('exportCsvBtn').addEventListener('click', function(){
+    var headers = ['Name','Phone number','Address','Instagram Username','Emails'];
+    var lines = [headers.join(',')];
+    allContacts().forEach(function(c){
+      lines.push([c.Name, c.Phone, c.Address, c.Instagram, c.Emails].map(toCsvValue).join(','));
+    });
+    download('lawyer_contacts_full.csv', lines.join('\n'), 'text/csv');
+  });
+
+  if(manageMode){
+    var headerCell = document.getElementById('manageHeaderCell');
+    if(headerCell) headerCell.style.display = '';
+    var banner = document.createElement('div');
+    banner.className = 'note';
+    banner.style.marginBottom = '14px';
+    banner.textContent = 'Management view active \u2014 you can remove community-submitted entries below. Verified entries stay locked. This view is only reachable via this special link; nobody browsing the plain page sees it.';
+    storageNote.insertAdjacentElement('afterend', banner);
+
+    tableBody.addEventListener('click', async function(e){
+      var target = e.target;
+      if(target && target.classList && target.classList.contains('mgmt-del')){
+        var uid = target.getAttribute('data-uid');
+        if(!uid) return;
+        if(!window.confirm('Remove this community entry permanently? This cannot be undone.')) return;
+        var idx = -1, storedKey = null;
+        for(var i=0;i<community.length;i++){ if(community[i]._uid === uid){ idx = i; storedKey = community[i]._key; break; } }
+        if(idx !== -1) community.splice(idx, 1);
+        if(storedKey && window.storage && typeof window.storage.delete === 'function'){
+          try{ await window.storage.delete(storedKey, true); }catch(err){ /* best effort */ }
+        }
+        render(searchBox.value, false);
+      }
+    });
+  }
+
+  render('', false);
+  loadCommunityEntries();
+})();
+</script>
+</body>
+</html>
