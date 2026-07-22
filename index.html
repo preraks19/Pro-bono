@@ -431,7 +431,7 @@
       statusNote.className = 'note good';
       render(searchBox.value, false);
     }catch(err){
-      statusNote.textContent = 'Could not load the directory from /api/submit (' + err.message + '). Make sure the API route is deployed and Postgres is connected.';
+      statusNote.textContent = 'Could not load the directory from /api/submit (' + err.message + '). Make sure the API route is deployed and Supabase is connected.';
       statusNote.className = 'note';
     }
   }

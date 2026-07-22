@@ -4,10 +4,9 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "seed": "node scripts/seed.mjs"
+    "seed": "node seed.mjs"
   },
   "dependencies": {
-    "@supabase/supabase-js": "^2.110.8",
-    "@vercel/postgres": "^0.10.0"
+    "@supabase/supabase-js": "^2.110.8"
   }
 }
