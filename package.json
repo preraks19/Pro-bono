@@ -1,0 +1,12 @@
+{
+  "name": "lawyer-contacts-directory",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "seed": "node scripts/seed.mjs"
+  },
+  "dependencies": {
+    "@vercel/postgres": "^0.10.0"
+  }
+}
